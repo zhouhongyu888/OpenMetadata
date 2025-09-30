@@ -45,6 +45,8 @@ export interface ServiceConnection {
  * Security Connection.
  *
  * Drive Connection.
+ *
+ * MCP Connection configuration
  */
 export interface ServiceConnectionClass {
     config?: ConfigClass;
@@ -275,6 +277,8 @@ export interface ServiceConnectionClass {
  * SharePoint Connection Config
  *
  * Custom Drive Connection to build a source that is not supported.
+ *
+ * MCP Connection Config
  */
 export interface ConfigClass {
     /**
@@ -1734,6 +1738,10 @@ export interface ConfigClass {
      * SharePoint site URL
      */
     siteUrl?: string;
+    /**
+     * MCP Server Configuration
+     */
+    config?: MCPServerConfig;
 }
 
 /**
@@ -2389,6 +2397,28 @@ export interface ConsumerConfigSSLClass {
      * The private key associated with the SSL certificate.
      */
     sslKey?: string;
+}
+
+/**
+ * MCP Server Configuration
+ */
+export interface MCPServerConfig {
+    /**
+     * Arguments to pass to the command
+     */
+    args?: string[];
+    /**
+     * Command to execute the MCP server
+     */
+    command: string;
+    /**
+     * Working directory for the MCP server process
+     */
+    cwd?: string;
+    /**
+     * Environment variables for the MCP server process
+     */
+    env?: { [key: string]: string };
 }
 
 /**
@@ -3927,6 +3957,7 @@ export enum ConfigType {
     Kinesis = "Kinesis",
     Lightdash = "Lightdash",
     Looker = "Looker",
+    MCP = "Mcp",
     MariaDB = "MariaDB",
     Matillion = "Matillion",
     Metabase = "Metabase",

@@ -11,109 +11,112 @@
  *  limitations under the License.
  */
 /**
- * Create MCP Service entity request
+ * Create MCP Prompt request
  */
-export interface CreateMCPService {
-    connection: MCPConnection;
+export interface CreateMCPPrompt {
+    /**
+     * Arguments for the prompt template.
+     */
+    arguments?: PromptArgument[];
     /**
      * List of fully qualified names of data products this entity is part of.
      */
     dataProducts?: string[];
     /**
-     * Description of MCP service instance.
+     * Description of the MCP prompt.
      */
     description?: string;
     /**
-     * Display Name that identifies this MCP service.
+     * Display Name that identifies this MCP prompt.
      */
     displayName?: string;
     /**
-     * List of fully qualified names of domains the MCP Service belongs to.
+     * List of fully qualified names of domains the MCP prompt belongs to.
      */
     domains?: string[];
     /**
-     * Life Cycle properties of the entity
+     * Example usages of the prompt.
+     */
+    examples?: Example[];
+    /**
+     * Life Cycle properties of the entity.
      */
     lifeCycle?: LifeCycle;
     /**
-     * Name that identifies this MCP service.
+     * Name of the MCP prompt.
      */
     name: string;
     /**
-     * Owners of this MCP service.
+     * Owners of this MCP prompt.
      */
     owners?: EntityReference[];
     /**
-     * Instructions or guidelines for using this MCP server
+     * Type of the MCP prompt.
      */
-    serverInstructions?: string;
+    promptType?: MCPPromptType;
     /**
-     * Type of MCP service
+     * Reference to the MCP service that this prompt belongs to.
      */
-    serviceType: ServiceType;
+    service: string;
     /**
-     * Tags for this MCP service.
+     * Tags for this MCP prompt.
      */
     tags?: TagLabel[];
+    /**
+     * Template text for the prompt.
+     */
+    template?: string;
 }
 
 /**
- * MCP Connection configuration
+ * Argument definition for an MCP prompt
  */
-export interface MCPConnection {
-    config?: ConfigClass;
+export interface PromptArgument {
+    /**
+     * Default value for the argument
+     */
+    default?: any[] | boolean | number | { [key: string]: any } | null | string;
+    /**
+     * Description of the argument
+     */
+    description?: string;
+    /**
+     * Allowed values for the argument
+     */
+    enum?: Array<boolean | number | string>;
+    /**
+     * Name of the argument
+     */
+    name: string;
+    /**
+     * Whether this argument is required
+     */
+    required?: boolean;
+    /**
+     * Expected type of the argument (e.g., string, number, boolean, array, object)
+     */
+    type: string;
+    [property: string]: any;
+}
+
+export interface Example {
+    /**
+     * Example arguments for the prompt.
+     */
+    arguments?: { [key: string]: any };
+    /**
+     * Description of the example.
+     */
+    description?: string;
+    /**
+     * Example output from the prompt.
+     */
+    output?: string;
+    [property: string]: any;
 }
 
 /**
- * MCP Connection Config
- */
-export interface ConfigClass {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
- * MCP Server Configuration
- */
-export interface MCPServerConfig {
-    /**
-     * Arguments to pass to the command
-     */
-    args?: string[];
-    /**
-     * Command to execute the MCP server
-     */
-    command: string;
-    /**
-     * Working directory for the MCP server process
-     */
-    cwd?: string;
-    /**
-     * Environment variables for the MCP server process
-     */
-    env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
-}
-
-/**
- * Life Cycle properties of the entity
+ * Life Cycle properties of the entity.
  *
  * This schema defines Life Cycle Properties.
  */
@@ -164,7 +167,7 @@ export interface AccessDetails {
  * example, a table has an attribute called database of type EntityReference that captures
  * the relationship of a table `belongs to a` database.
  *
- * Owners of this MCP service.
+ * Owners of this MCP prompt.
  *
  * This schema defines the EntityReferenceList type used for referencing an entity.
  * EntityReference is used for capturing relationships from one entity to another. For
@@ -215,23 +218,16 @@ export interface EntityReference {
 }
 
 /**
- * Type of MCP service
+ * Type of the MCP prompt.
  *
- * This schema defines the service types entities which requires a connection.
+ * Type of MCP prompt based on its purpose
  */
-export enum ServiceType {
-    API = "Api",
-    Dashboard = "Dashboard",
-    Database = "Database",
-    Drive = "Drive",
-    MCP = "Mcp",
-    Messaging = "Messaging",
-    Metadata = "Metadata",
-    MlModel = "MlModel",
-    Pipeline = "Pipeline",
-    Search = "Search",
-    Security = "Security",
-    Storage = "Storage",
+export enum MCPPromptType {
+    Analysis = "Analysis",
+    Custom = "Custom",
+    Generation = "Generation",
+    Transformation = "Transformation",
+    Validation = "Validation",
 }
 
 /**

@@ -11,109 +11,85 @@
  *  limitations under the License.
  */
 /**
- * Create MCP Service entity request
+ * Create MCP Tool request
  */
-export interface CreateMCPService {
-    connection: MCPConnection;
+export interface CreateMCPTool {
+    /**
+     * Category or grouping for the tool.
+     */
+    category?: string;
     /**
      * List of fully qualified names of data products this entity is part of.
      */
     dataProducts?: string[];
     /**
-     * Description of MCP service instance.
+     * Description of the MCP tool.
      */
     description?: string;
     /**
-     * Display Name that identifies this MCP service.
+     * Display Name that identifies this MCP tool.
      */
     displayName?: string;
     /**
-     * List of fully qualified names of domains the MCP Service belongs to.
+     * List of fully qualified names of domains the MCP tool belongs to.
      */
     domains?: string[];
     /**
-     * Life Cycle properties of the entity
+     * Example usages of the tool.
+     */
+    examples?: Example[];
+    /**
+     * JSON Schema defining the tool's input parameters.
+     */
+    inputSchema?: string;
+    /**
+     * Life Cycle properties of the entity.
      */
     lifeCycle?: LifeCycle;
     /**
-     * Name that identifies this MCP service.
+     * Name of the MCP tool.
      */
     name: string;
     /**
-     * Owners of this MCP service.
+     * JSON Schema defining the tool's output format.
+     */
+    outputSchema?: string;
+    /**
+     * Owners of this MCP tool.
      */
     owners?: EntityReference[];
     /**
-     * Instructions or guidelines for using this MCP server
+     * Reference to the MCP service that this tool belongs to.
      */
-    serverInstructions?: string;
+    service: string;
     /**
-     * Type of MCP service
-     */
-    serviceType: ServiceType;
-    /**
-     * Tags for this MCP service.
+     * Tags for this MCP tool.
      */
     tags?: TagLabel[];
+    /**
+     * Type of the MCP tool.
+     */
+    toolType?: MCPToolType;
+}
+
+export interface Example {
+    /**
+     * Description of the example.
+     */
+    description?: string;
+    /**
+     * Example input for the tool.
+     */
+    input?: { [key: string]: any };
+    /**
+     * Example output from the tool.
+     */
+    output?: { [key: string]: any };
+    [property: string]: any;
 }
 
 /**
- * MCP Connection configuration
- */
-export interface MCPConnection {
-    config?: ConfigClass;
-}
-
-/**
- * MCP Connection Config
- */
-export interface ConfigClass {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
- * MCP Server Configuration
- */
-export interface MCPServerConfig {
-    /**
-     * Arguments to pass to the command
-     */
-    args?: string[];
-    /**
-     * Command to execute the MCP server
-     */
-    command: string;
-    /**
-     * Working directory for the MCP server process
-     */
-    cwd?: string;
-    /**
-     * Environment variables for the MCP server process
-     */
-    env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
-}
-
-/**
- * Life Cycle properties of the entity
+ * Life Cycle properties of the entity.
  *
  * This schema defines Life Cycle Properties.
  */
@@ -164,7 +140,7 @@ export interface AccessDetails {
  * example, a table has an attribute called database of type EntityReference that captures
  * the relationship of a table `belongs to a` database.
  *
- * Owners of this MCP service.
+ * Owners of this MCP tool.
  *
  * This schema defines the EntityReferenceList type used for referencing an entity.
  * EntityReference is used for capturing relationships from one entity to another. For
@@ -212,26 +188,6 @@ export interface EntityReference {
      * `dashboardService`...
      */
     type: string;
-}
-
-/**
- * Type of MCP service
- *
- * This schema defines the service types entities which requires a connection.
- */
-export enum ServiceType {
-    API = "Api",
-    Dashboard = "Dashboard",
-    Database = "Database",
-    Drive = "Drive",
-    MCP = "Mcp",
-    Messaging = "Messaging",
-    Metadata = "Metadata",
-    MlModel = "MlModel",
-    Pipeline = "Pipeline",
-    Search = "Search",
-    Security = "Security",
-    Storage = "Storage",
 }
 
 /**
@@ -320,4 +276,17 @@ export interface Style {
      * An icon to associate with GlossaryTerm, Tag, Domain or Data Product.
      */
     iconURL?: string;
+}
+
+/**
+ * Type of the MCP tool.
+ *
+ * Type of MCP tool based on its functionality
+ */
+export enum MCPToolType {
+    Custom = "Custom",
+    DataOperation = "DataOperation",
+    FileOperation = "FileOperation",
+    SystemOperation = "SystemOperation",
+    WebOperation = "WebOperation",
 }

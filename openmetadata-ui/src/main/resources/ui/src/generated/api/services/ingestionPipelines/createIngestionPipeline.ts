@@ -262,6 +262,8 @@ export interface SourceConfig {
  *
  * ApiService Metadata Pipeline Configuration.
  *
+ * MCP Service Metadata Pipeline Configuration.
+ *
  * Apply a set of operations on a service
  */
 export interface Pipeline {
@@ -793,6 +795,16 @@ export interface Pipeline {
      */
     markDeletedApiCollections?: boolean;
     /**
+     * Optional configuration to soft delete MCP servers in OpenMetadata if the source servers
+     * are deleted. Also, if the server is deleted, all the associated entities like tools,
+     * resources, prompts, etc., with that server will be deleted
+     */
+    markDeletedMcpServers?: boolean;
+    /**
+     * Regex to only fetch tools with names matching the pattern.
+     */
+    toolFilterPattern?: FilterPattern;
+    /**
      * Optional value of the ingestion runner name responsible for running the workflow
      */
     ingestionRunner?: string;
@@ -859,6 +871,8 @@ export interface Pipeline {
  * Regex to include/exclude FHIR resource types
  *
  * Regex to only fetch tags that matches the pattern.
+ *
+ * Regex to only fetch tools with names matching the pattern.
  */
 export interface FilterPattern {
     /**
@@ -2205,6 +2219,8 @@ export interface ServiceConnections {
  * Security Connection.
  *
  * Drive Connection.
+ *
+ * MCP Connection configuration
  */
 export interface ServiceConnection {
     config?: ConfigClass;
@@ -2435,6 +2451,8 @@ export interface ServiceConnection {
  * SharePoint Connection Config
  *
  * Custom Drive Connection to build a source that is not supported.
+ *
+ * MCP Connection Config
  */
 export interface ConfigClass {
     /**
@@ -3894,6 +3912,10 @@ export interface ConfigClass {
      * SharePoint site URL
      */
     siteUrl?: string;
+    /**
+     * MCP Server Configuration
+     */
+    config?: MCPServerConfig;
 }
 
 /**
@@ -4505,6 +4527,28 @@ export interface ConsumerConfigSSLClass {
      * The private key associated with the SSL certificate.
      */
     sslKey?: string;
+}
+
+/**
+ * MCP Server Configuration
+ */
+export interface MCPServerConfig {
+    /**
+     * Arguments to pass to the command
+     */
+    args?: string[];
+    /**
+     * Command to execute the MCP server
+     */
+    command: string;
+    /**
+     * Working directory for the MCP server process
+     */
+    cwd?: string;
+    /**
+     * Environment variables for the MCP server process
+     */
+    env?: { [key: string]: string };
 }
 
 /**
@@ -5839,6 +5883,7 @@ export enum PurpleType {
     Kinesis = "Kinesis",
     Lightdash = "Lightdash",
     Looker = "Looker",
+    MCP = "Mcp",
     MariaDB = "MariaDB",
     Matillion = "Matillion",
     Metabase = "Metabase",
@@ -5966,6 +6011,8 @@ export interface StorageMetadataBucketDetails {
  *
  * Api Source Config Metadata Pipeline type
  *
+ * MCP Source Config Metadata Pipeline type
+ *
  * Reverse Ingestion Config Pipeline type
  */
 export enum FluffyType {
@@ -5979,6 +6026,7 @@ export enum FluffyType {
     DatabaseUsage = "DatabaseUsage",
     Dbt = "DBT",
     DriveMetadata = "DriveMetadata",
+    MCPMetadata = "McpMetadata",
     MessagingMetadata = "MessagingMetadata",
     MetadataToElasticSearch = "MetadataToElasticSearch",
     MlModelMetadata = "MlModelMetadata",

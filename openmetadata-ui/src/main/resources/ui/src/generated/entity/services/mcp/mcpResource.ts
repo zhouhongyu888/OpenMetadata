@@ -11,15 +11,14 @@
  *  limitations under the License.
  */
 /**
- * This schema defines the MCP (Model Context Protocol) Service entity, such as Claude
- * Desktop MCP servers.
+ * This schema defines the MCP Resource entity. An MCP Resource represents data or content
+ * that can be accessed through an MCP service.
  */
-export interface MCPService {
+export interface MCPResource {
     /**
      * Change that lead to this version of the entity.
      */
     changeDescription?: ChangeDescription;
-    connection?:        MCPConnection;
     /**
      * List of data products this entity is part of.
      */
@@ -29,31 +28,31 @@ export interface MCPService {
      */
     deleted?: boolean;
     /**
-     * Description of a MCP service instance.
+     * Description of the MCP resource.
      */
     description?: string;
     /**
-     * Display Name that identifies this MCP service.
+     * Display Name that identifies this MCP resource.
      */
     displayName?: string;
     /**
-     * List of domains the MCP service belongs to.
+     * List of domains the MCP resource belongs to.
      */
     domains?: EntityReference[];
     /**
-     * Followers of this MCP service.
+     * Followers of this MCP resource.
      */
     followers?: EntityReference[];
     /**
-     * Fully qualified name of the MCP service.
+     * Fully qualified name of the MCP resource.
      */
     fullyQualifiedName?: string;
     /**
-     * Link to the resource corresponding to this MCP service.
+     * Link to the resource corresponding to this MCP resource.
      */
     href?: string;
     /**
-     * Unique identifier of this service instance.
+     * Unique identifier of this MCP resource instance.
      */
     id: string;
     /**
@@ -61,34 +60,49 @@ export interface MCPService {
      */
     incrementalChangeDescription?: ChangeDescription;
     /**
-     * Name that identifies this MCP service.
+     * Last modified timestamp of the resource.
+     */
+    lastModified?: number;
+    /**
+     * Life Cycle properties of the entity.
+     */
+    lifeCycle?: LifeCycle;
+    /**
+     * Additional metadata about the resource.
+     */
+    metadata?: { [key: string]: any };
+    /**
+     * MIME type of the resource.
+     */
+    mimeType?: string;
+    /**
+     * Name of the MCP resource.
      */
     name: string;
     /**
-     * Owners of this MCP service.
+     * Owners of this MCP resource.
      */
     owners?: EntityReference[];
     /**
-     * References to pipelines deployed for this MCP service to extract metadata, usage, lineage
-     * etc.
+     * Type of the MCP resource.
      */
-    pipelines?: EntityReference[];
+    resourceType?: MCPResourceType;
     /**
-     * Instructions or guidelines for using this MCP server
+     * Reference to the MCP service that this resource belongs to.
      */
-    serverInstructions?: string;
+    service: EntityReference;
     /**
-     * Type of MCP service
+     * Service type this resource belongs to.
      */
-    serviceType: ServiceType;
+    serviceType?: ServiceType;
     /**
-     * Tags for this MCP service.
+     * Size of the resource in bytes (if applicable).
+     */
+    size?: number;
+    /**
+     * Tags for this MCP resource.
      */
     tags?: TagLabel[];
-    /**
-     * Last test connection results for this service
-     */
-    testConnectionResult?: TestConnectionResult;
     /**
      * Last update time corresponding to the new version of the entity in Unix epoch time
      * milliseconds.
@@ -99,9 +113,17 @@ export interface MCPService {
      */
     updatedBy?: string;
     /**
+     * URI of the resource.
+     */
+    uri: string;
+    /**
      * Metadata version of the entity.
      */
     version?: number;
+    /**
+     * Votes on the entity.
+     */
+    votes?: Votes;
 }
 
 /**
@@ -172,61 +194,6 @@ export interface FieldChange {
 }
 
 /**
- * MCP Connection configuration
- */
-export interface MCPConnection {
-    config?: ConfigClass;
-}
-
-/**
- * MCP Connection Config
- */
-export interface ConfigClass {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
- * MCP Server Configuration
- */
-export interface MCPServerConfig {
-    /**
-     * Arguments to pass to the command
-     */
-    args?: string[];
-    /**
-     * Command to execute the MCP server
-     */
-    command: string;
-    /**
-     * Working directory for the MCP server process
-     */
-    cwd?: string;
-    /**
-     * Environment variables for the MCP server process
-     */
-    env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
-}
-
-/**
  * List of data products this entity is part of.
  *
  * This schema defines the EntityReferenceList type used for referencing an entity.
@@ -238,6 +205,10 @@ export enum MCPType {
  * EntityReference is used for capturing relationships from one entity to another. For
  * example, a table has an attribute called database of type EntityReference that captures
  * the relationship of a table `belongs to a` database.
+ *
+ * User, Pipeline, Query that created,updated or accessed the data asset
+ *
+ * Reference to the MCP service that this resource belongs to.
  */
 export interface EntityReference {
     /**
@@ -283,7 +254,65 @@ export interface EntityReference {
 }
 
 /**
- * Type of MCP service
+ * Life Cycle properties of the entity.
+ *
+ * This schema defines Life Cycle Properties.
+ */
+export interface LifeCycle {
+    /**
+     * Access Details about accessed aspect of the data asset
+     */
+    accessed?: AccessDetails;
+    /**
+     * Access Details about created aspect of the data asset
+     */
+    created?: AccessDetails;
+    /**
+     * Access Details about updated aspect of the data asset
+     */
+    updated?: AccessDetails;
+}
+
+/**
+ * Access Details about accessed aspect of the data asset
+ *
+ * Access details of an entity
+ *
+ * Access Details about created aspect of the data asset
+ *
+ * Access Details about updated aspect of the data asset
+ */
+export interface AccessDetails {
+    /**
+     * User, Pipeline, Query that created,updated or accessed the data asset
+     */
+    accessedBy?: EntityReference;
+    /**
+     * Any process that accessed the data asset that is not captured in OpenMetadata.
+     */
+    accessedByAProcess?: string;
+    /**
+     * Timestamp of data asset accessed for creation, update, read.
+     */
+    timestamp: number;
+}
+
+/**
+ * Type of the MCP resource.
+ *
+ * Type of MCP resource based on its content
+ */
+export enum MCPResourceType {
+    API = "API",
+    Custom = "Custom",
+    Database = "Database",
+    Directory = "Directory",
+    File = "File",
+    URL = "URL",
+}
+
+/**
+ * Service type this resource belongs to.
  *
  * This schema defines the service types entities which requires a connection.
  */
@@ -391,61 +420,25 @@ export interface Style {
 }
 
 /**
- * Last test connection results for this service
+ * Votes on the entity.
  *
- * TestConnectionResult is the definition that will encapsulate result of running the test
- * connection steps.
+ * This schema defines the Votes for a Data Asset.
  */
-export interface TestConnectionResult {
+export interface Votes {
     /**
-     * Last time that the test connection was executed
+     * List of all the Users who downVoted
      */
-    lastUpdatedAt?: number;
+    downVoters?: EntityReference[];
     /**
-     * Test Connection Result computation status.
+     * Total down-votes the entity has
      */
-    status?: StatusType;
+    downVotes?: number;
     /**
-     * Steps to test the connection. Order matters.
+     * List of all the Users who upVoted
      */
-    steps: TestConnectionStepResult[];
-}
-
-/**
- * Test Connection Result computation status.
- *
- * Enum defining possible Test Connection Result status
- */
-export enum StatusType {
-    Failed = "Failed",
-    Running = "Running",
-    Successful = "Successful",
-}
-
-/**
- * Function that tests one specific element of the service. E.g., listing schemas, lineage,
- * or tags.
- */
-export interface TestConnectionStepResult {
+    upVoters?: EntityReference[];
     /**
-     * In case of failed step, this field would contain the actual error faced during the step.
+     * Total up-votes the entity has
      */
-    errorLog?: string;
-    /**
-     * Is this step mandatory to be passed?
-     */
-    mandatory: boolean;
-    /**
-     * Results or exceptions to be shared after running the test. This message comes from the
-     * test connection definition
-     */
-    message?: string;
-    /**
-     * Name of the step being tested
-     */
-    name: string;
-    /**
-     * Did the step pass successfully?
-     */
-    passed: boolean;
+    upVotes?: number;
 }

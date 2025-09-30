@@ -11,109 +11,73 @@
  *  limitations under the License.
  */
 /**
- * Create MCP Service entity request
+ * Create MCP Resource request
  */
-export interface CreateMCPService {
-    connection: MCPConnection;
+export interface CreateMCPResource {
     /**
      * List of fully qualified names of data products this entity is part of.
      */
     dataProducts?: string[];
     /**
-     * Description of MCP service instance.
+     * Description of the MCP resource.
      */
     description?: string;
     /**
-     * Display Name that identifies this MCP service.
+     * Display Name that identifies this MCP resource.
      */
     displayName?: string;
     /**
-     * List of fully qualified names of domains the MCP Service belongs to.
+     * List of fully qualified names of domains the MCP resource belongs to.
      */
     domains?: string[];
     /**
-     * Life Cycle properties of the entity
+     * Last modified timestamp of the resource.
+     */
+    lastModified?: number;
+    /**
+     * Life Cycle properties of the entity.
      */
     lifeCycle?: LifeCycle;
     /**
-     * Name that identifies this MCP service.
+     * Additional metadata about the resource.
+     */
+    metadata?: { [key: string]: any };
+    /**
+     * MIME type of the resource.
+     */
+    mimeType?: string;
+    /**
+     * Name of the MCP resource.
      */
     name: string;
     /**
-     * Owners of this MCP service.
+     * Owners of this MCP resource.
      */
     owners?: EntityReference[];
     /**
-     * Instructions or guidelines for using this MCP server
+     * Type of the MCP resource.
      */
-    serverInstructions?: string;
+    resourceType?: MCPResourceType;
     /**
-     * Type of MCP service
+     * Reference to the MCP service that this resource belongs to.
      */
-    serviceType: ServiceType;
+    service: string;
     /**
-     * Tags for this MCP service.
+     * Size of the resource in bytes (if applicable).
+     */
+    size?: number;
+    /**
+     * Tags for this MCP resource.
      */
     tags?: TagLabel[];
+    /**
+     * URI of the resource.
+     */
+    uri: string;
 }
 
 /**
- * MCP Connection configuration
- */
-export interface MCPConnection {
-    config?: ConfigClass;
-}
-
-/**
- * MCP Connection Config
- */
-export interface ConfigClass {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
- * MCP Server Configuration
- */
-export interface MCPServerConfig {
-    /**
-     * Arguments to pass to the command
-     */
-    args?: string[];
-    /**
-     * Command to execute the MCP server
-     */
-    command: string;
-    /**
-     * Working directory for the MCP server process
-     */
-    cwd?: string;
-    /**
-     * Environment variables for the MCP server process
-     */
-    env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
-}
-
-/**
- * Life Cycle properties of the entity
+ * Life Cycle properties of the entity.
  *
  * This schema defines Life Cycle Properties.
  */
@@ -164,7 +128,7 @@ export interface AccessDetails {
  * example, a table has an attribute called database of type EntityReference that captures
  * the relationship of a table `belongs to a` database.
  *
- * Owners of this MCP service.
+ * Owners of this MCP resource.
  *
  * This schema defines the EntityReferenceList type used for referencing an entity.
  * EntityReference is used for capturing relationships from one entity to another. For
@@ -215,23 +179,17 @@ export interface EntityReference {
 }
 
 /**
- * Type of MCP service
+ * Type of the MCP resource.
  *
- * This schema defines the service types entities which requires a connection.
+ * Type of MCP resource based on its content
  */
-export enum ServiceType {
-    API = "Api",
-    Dashboard = "Dashboard",
+export enum MCPResourceType {
+    API = "API",
+    Custom = "Custom",
     Database = "Database",
-    Drive = "Drive",
-    MCP = "Mcp",
-    Messaging = "Messaging",
-    Metadata = "Metadata",
-    MlModel = "MlModel",
-    Pipeline = "Pipeline",
-    Search = "Search",
-    Security = "Security",
-    Storage = "Storage",
+    Directory = "Directory",
+    File = "File",
+    URL = "URL",
 }
 
 /**

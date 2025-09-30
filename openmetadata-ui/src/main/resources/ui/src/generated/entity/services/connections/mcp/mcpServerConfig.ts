@@ -11,23 +11,6 @@
  *  limitations under the License.
  */
 /**
- * MCP Connection Config
- */
-export interface MCPConnection {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
  * MCP Server Configuration
  */
 export interface MCPServerConfig {
@@ -47,13 +30,4 @@ export interface MCPServerConfig {
      * Environment variables for the MCP server process
      */
     env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
 }

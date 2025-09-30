@@ -11,15 +11,18 @@
  *  limitations under the License.
  */
 /**
- * This schema defines the MCP (Model Context Protocol) Service entity, such as Claude
- * Desktop MCP servers.
+ * This schema defines the MCP Prompt entity. An MCP Prompt represents a template for AI
+ * interactions exposed by an MCP service.
  */
-export interface MCPService {
+export interface MCPPrompt {
+    /**
+     * Arguments for the prompt template.
+     */
+    arguments?: PromptArgument[];
     /**
      * Change that lead to this version of the entity.
      */
     changeDescription?: ChangeDescription;
-    connection?:        MCPConnection;
     /**
      * List of data products this entity is part of.
      */
@@ -29,31 +32,35 @@ export interface MCPService {
      */
     deleted?: boolean;
     /**
-     * Description of a MCP service instance.
+     * Description of the MCP prompt.
      */
     description?: string;
     /**
-     * Display Name that identifies this MCP service.
+     * Display Name that identifies this MCP prompt.
      */
     displayName?: string;
     /**
-     * List of domains the MCP service belongs to.
+     * List of domains the MCP prompt belongs to.
      */
     domains?: EntityReference[];
     /**
-     * Followers of this MCP service.
+     * Example usages of the prompt.
+     */
+    examples?: Example[];
+    /**
+     * Followers of this MCP prompt.
      */
     followers?: EntityReference[];
     /**
-     * Fully qualified name of the MCP service.
+     * Fully qualified name of the MCP prompt.
      */
     fullyQualifiedName?: string;
     /**
-     * Link to the resource corresponding to this MCP service.
+     * Link to the resource corresponding to this MCP prompt.
      */
     href?: string;
     /**
-     * Unique identifier of this service instance.
+     * Unique identifier of this MCP prompt instance.
      */
     id: string;
     /**
@@ -61,34 +68,37 @@ export interface MCPService {
      */
     incrementalChangeDescription?: ChangeDescription;
     /**
-     * Name that identifies this MCP service.
+     * Life Cycle properties of the entity.
+     */
+    lifeCycle?: LifeCycle;
+    /**
+     * Name of the MCP prompt.
      */
     name: string;
     /**
-     * Owners of this MCP service.
+     * Owners of this MCP prompt.
      */
     owners?: EntityReference[];
     /**
-     * References to pipelines deployed for this MCP service to extract metadata, usage, lineage
-     * etc.
+     * Type of the MCP prompt.
      */
-    pipelines?: EntityReference[];
+    promptType?: MCPPromptType;
     /**
-     * Instructions or guidelines for using this MCP server
+     * Reference to the MCP service that this prompt belongs to.
      */
-    serverInstructions?: string;
+    service: EntityReference;
     /**
-     * Type of MCP service
+     * Service type this prompt belongs to.
      */
-    serviceType: ServiceType;
+    serviceType?: ServiceType;
     /**
-     * Tags for this MCP service.
+     * Tags for this MCP prompt.
      */
     tags?: TagLabel[];
     /**
-     * Last test connection results for this service
+     * Template text for the prompt.
      */
-    testConnectionResult?: TestConnectionResult;
+    template?: string;
     /**
      * Last update time corresponding to the new version of the entity in Unix epoch time
      * milliseconds.
@@ -102,6 +112,41 @@ export interface MCPService {
      * Metadata version of the entity.
      */
     version?: number;
+    /**
+     * Votes on the entity.
+     */
+    votes?: Votes;
+}
+
+/**
+ * Argument definition for an MCP prompt
+ */
+export interface PromptArgument {
+    /**
+     * Default value for the argument
+     */
+    default?: any[] | boolean | number | { [key: string]: any } | null | string;
+    /**
+     * Description of the argument
+     */
+    description?: string;
+    /**
+     * Allowed values for the argument
+     */
+    enum?: Array<boolean | number | string>;
+    /**
+     * Name of the argument
+     */
+    name: string;
+    /**
+     * Whether this argument is required
+     */
+    required?: boolean;
+    /**
+     * Expected type of the argument (e.g., string, number, boolean, array, object)
+     */
+    type: string;
+    [property: string]: any;
 }
 
 /**
@@ -172,61 +217,6 @@ export interface FieldChange {
 }
 
 /**
- * MCP Connection configuration
- */
-export interface MCPConnection {
-    config?: ConfigClass;
-}
-
-/**
- * MCP Connection Config
- */
-export interface ConfigClass {
-    /**
-     * MCP Server Configuration
-     */
-    config:                      MCPServerConfig;
-    connectionArguments?:        { [key: string]: any };
-    connectionOptions?:          { [key: string]: string };
-    supportsMetadataExtraction?: boolean;
-    /**
-     * Service Type
-     */
-    type?: MCPType;
-}
-
-/**
- * MCP Server Configuration
- */
-export interface MCPServerConfig {
-    /**
-     * Arguments to pass to the command
-     */
-    args?: string[];
-    /**
-     * Command to execute the MCP server
-     */
-    command: string;
-    /**
-     * Working directory for the MCP server process
-     */
-    cwd?: string;
-    /**
-     * Environment variables for the MCP server process
-     */
-    env?: { [key: string]: string };
-}
-
-/**
- * Service Type
- *
- * Service type.
- */
-export enum MCPType {
-    MCP = "Mcp",
-}
-
-/**
  * List of data products this entity is part of.
  *
  * This schema defines the EntityReferenceList type used for referencing an entity.
@@ -238,6 +228,10 @@ export enum MCPType {
  * EntityReference is used for capturing relationships from one entity to another. For
  * example, a table has an attribute called database of type EntityReference that captures
  * the relationship of a table `belongs to a` database.
+ *
+ * User, Pipeline, Query that created,updated or accessed the data asset
+ *
+ * Reference to the MCP service that this prompt belongs to.
  */
 export interface EntityReference {
     /**
@@ -282,8 +276,81 @@ export interface EntityReference {
     type: string;
 }
 
+export interface Example {
+    /**
+     * Example arguments for the prompt.
+     */
+    arguments?: { [key: string]: any };
+    /**
+     * Description of the example.
+     */
+    description?: string;
+    /**
+     * Example output from the prompt.
+     */
+    output?: string;
+    [property: string]: any;
+}
+
 /**
- * Type of MCP service
+ * Life Cycle properties of the entity.
+ *
+ * This schema defines Life Cycle Properties.
+ */
+export interface LifeCycle {
+    /**
+     * Access Details about accessed aspect of the data asset
+     */
+    accessed?: AccessDetails;
+    /**
+     * Access Details about created aspect of the data asset
+     */
+    created?: AccessDetails;
+    /**
+     * Access Details about updated aspect of the data asset
+     */
+    updated?: AccessDetails;
+}
+
+/**
+ * Access Details about accessed aspect of the data asset
+ *
+ * Access details of an entity
+ *
+ * Access Details about created aspect of the data asset
+ *
+ * Access Details about updated aspect of the data asset
+ */
+export interface AccessDetails {
+    /**
+     * User, Pipeline, Query that created,updated or accessed the data asset
+     */
+    accessedBy?: EntityReference;
+    /**
+     * Any process that accessed the data asset that is not captured in OpenMetadata.
+     */
+    accessedByAProcess?: string;
+    /**
+     * Timestamp of data asset accessed for creation, update, read.
+     */
+    timestamp: number;
+}
+
+/**
+ * Type of the MCP prompt.
+ *
+ * Type of MCP prompt based on its purpose
+ */
+export enum MCPPromptType {
+    Analysis = "Analysis",
+    Custom = "Custom",
+    Generation = "Generation",
+    Transformation = "Transformation",
+    Validation = "Validation",
+}
+
+/**
+ * Service type this prompt belongs to.
  *
  * This schema defines the service types entities which requires a connection.
  */
@@ -391,61 +458,25 @@ export interface Style {
 }
 
 /**
- * Last test connection results for this service
+ * Votes on the entity.
  *
- * TestConnectionResult is the definition that will encapsulate result of running the test
- * connection steps.
+ * This schema defines the Votes for a Data Asset.
  */
-export interface TestConnectionResult {
+export interface Votes {
     /**
-     * Last time that the test connection was executed
+     * List of all the Users who downVoted
      */
-    lastUpdatedAt?: number;
+    downVoters?: EntityReference[];
     /**
-     * Test Connection Result computation status.
+     * Total down-votes the entity has
      */
-    status?: StatusType;
+    downVotes?: number;
     /**
-     * Steps to test the connection. Order matters.
+     * List of all the Users who upVoted
      */
-    steps: TestConnectionStepResult[];
-}
-
-/**
- * Test Connection Result computation status.
- *
- * Enum defining possible Test Connection Result status
- */
-export enum StatusType {
-    Failed = "Failed",
-    Running = "Running",
-    Successful = "Successful",
-}
-
-/**
- * Function that tests one specific element of the service. E.g., listing schemas, lineage,
- * or tags.
- */
-export interface TestConnectionStepResult {
+    upVoters?: EntityReference[];
     /**
-     * In case of failed step, this field would contain the actual error faced during the step.
+     * Total up-votes the entity has
      */
-    errorLog?: string;
-    /**
-     * Is this step mandatory to be passed?
-     */
-    mandatory: boolean;
-    /**
-     * Results or exceptions to be shared after running the test. This message comes from the
-     * test connection definition
-     */
-    message?: string;
-    /**
-     * Name of the step being tested
-     */
-    name: string;
-    /**
-     * Did the step pass successfully?
-     */
-    passed: boolean;
+    upVotes?: number;
 }

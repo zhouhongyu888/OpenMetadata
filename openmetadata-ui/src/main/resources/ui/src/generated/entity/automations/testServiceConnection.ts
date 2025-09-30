@@ -3960,6 +3960,7 @@ export enum ServiceType {
     Dashboard = "Dashboard",
     Database = "Database",
     Drive = "Drive",
+    MCP = "Mcp",
     Messaging = "Messaging",
     Metadata = "Metadata",
     MlModel = "MlModel",
